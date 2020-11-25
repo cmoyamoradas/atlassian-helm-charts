@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: atlassian/jira-software
+  pullPolicy: IfNotPresent
+  tag: 8.13.1
+
+database:
+  type: postgres72
+  url: jdbc:postgresql://postgres:5432/jira
+  driver: org.postgresql.Driver
+  username: jira
+  password: atlassian
+
+cluster:
+  enabled: true
+  ehcachePort: 40011
+  clusterPort: 40001
+
+jira:
+  service:
+    port: 80
+    type: ClusterIP
+  gid: "2001"
+  ports:
+    jiraport: 8080
+  resources:
+    jvm:
+      maxHeap: "1g"
+      minHeap: "1g"
+      reservedCodeCache: "512m"
+
+persistence:
+  enabled: true
+
+volumes:
+  home:
+    storageClassName: nfs-storageclass 
+    resources:
+      requests:
+        storage: 1Gi
+    mountPath: "/var/atlassian/application-data/jira"
+  sharedHome:
+    mountPath: "/var/atlassian/shared"
+    volumeClaimName: jira-dc-shared-pvc

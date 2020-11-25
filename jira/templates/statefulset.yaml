@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "jira.fullname" . }}
+spec:
+  serviceName: {{ include "jira.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jira.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jira.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "jira.image" . | quote }}
+          ports:
+            - containerPort: {{ .Values.jira.ports.jiraport }}
+              name: jiraport
+            - containerPort: {{ .Values.jira.ports.jiraclusterport }}
+              name: jiraclusterport
+            - containerPort: {{ .Values.jira.ports.remote-object }}
+              name: remote-object
+          env:
+            - name: JIRA_NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: EHCACHE_LISTENER_HOSTNAME
+              value: "$(JIRA_NODE_ID).{{ .Chart.Name }}.default.svc.cluster.local"
+          envFrom:
+            - configMapRef:
+                name: jira-dc-config
+          volumeMounts:
+            - mountPath: {{ .Values.volumes.home.mountPath | quote }}
+              name: home
+            - mountPath: {{ .Values.volumes.sharedHome.mountPath | quote }}
+              name: shared-home
+      volumes:
+        - name: home
+          emptyDir:
+            {}
+        - name: shared-home
+          persistentVolumeClaim:
+            claimName: {{ .Values.volumes.sharedHome.volumeClaimName }}
+  volumeClaimTemplates:
+  - metadata:
+      name: home
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: {{ .Values.volumes.home.storageClassName | quote }}
+      {{- with .Values.volumes.localHome.resources }}
+      resources:
+      {{- toYaml . | nindent 10 }}
+      {{- end }}

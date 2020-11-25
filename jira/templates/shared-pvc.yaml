@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.volumes.sharedHome.volumeClaimName }}
+spec:
+  storageClassName: {{ .Values.volumes.home.storageClassName | quote }} # SAME NAME AS THE STORAGECLASS
+  accessModes:
+    - ReadWriteMany #  must be the same as PersistentVolume
+  {{- with .Values.volumes.sharedHome.resources }}
+  resources:
+  {{- toYaml . | nindent 10 }}
+  {{- end }}
