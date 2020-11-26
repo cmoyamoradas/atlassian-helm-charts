@@ -13,6 +13,6 @@ entries:
     - Atlassian
     name: jira
     urls:
-    - https://github.com/cmoyamoradas/atlassian-helm-charts/jira-1.0.0.tgz
+    - https://cmoyamoradas.github.io/atlassian-helm-charts/jira-1.0.0.tgz
     version: 1.0.0
 generated: "2020-11-26T14:59:15.270315363+01:00"
