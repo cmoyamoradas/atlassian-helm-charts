@@ -3,12 +3,12 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-jira-dc-config
 data:
-  ATL_PROXY_PORT: {{ .Values.jira.service.port }}
-  ATL_JDBC_URL: {{ .Values.database.url }}
-  ATL_JDBC_USER: {{ .Values.database.username }}
-  ATL_JDBC_PASSWORD: {{ .Values.database.password }}
-  ATL_DB_DRIVER: {{ .Values.database.driver }}
-  ATL_DB_TYPE: {{ .Values.database.type }}
-  CLUSTERED: {{ .Values.cluster.enabled }}
-  JIRA_SHARED_HOME: {{ .Values.volumes.sharedHome.mountPath }}
-  EHCACHE_OBJECT_PORT: {{ .Values.cluster.ehcachePort }}
+  ATL_PROXY_PORT: {{ .Values.jira.service.port | quote }}
+  ATL_JDBC_URL: {{ .Values.database.url | quote }}
+  ATL_JDBC_USER: {{ .Values.database.username | quote }}
+  ATL_JDBC_PASSWORD: {{ .Values.database.password | quote }}
+  ATL_DB_DRIVER: {{ .Values.database.driver | quote }}
+  ATL_DB_TYPE: {{ .Values.database.type | quote }}
+  CLUSTERED: {{ .Values.cluster.enabled | quote }}
+  JIRA_SHARED_HOME: {{ .Values.volumes.sharedHome.mountPath | quote }}
+  EHCACHE_OBJECT_PORT: {{ .Values.cluster.ehcachePort | quote }}
