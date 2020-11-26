@@ -43,3 +43,6 @@ volumes:
   sharedHome:
     mountPath: "/var/atlassian/shared"
     volumeClaimName: jira-dc-shared-pvc
+    resources:
+      requests:
+        storage: 1Gi
