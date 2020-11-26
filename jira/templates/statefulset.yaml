@@ -34,7 +34,7 @@ spec:
               value: "$(JIRA_NODE_ID).{{ .Chart.Name }}.default.svc.cluster.local"
           envFrom:
             - configMapRef:
-                name: jira-dc-config
+                name: {{ .Release.Name }}-jira-dc-config
           volumeMounts:
             - mountPath: {{ .Values.volumes.home.mountPath | quote }}
               name: home
