@@ -1,27 +1,29 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "jira.fullname" . }}
+  name: {{ .Chart.Name }}
 spec:
-  serviceName: {{ include "jira.fullname" . }}
+  serviceName: {{ .Chart.Name }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "jira.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        {{- include "jira.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ include "jira.image" . | quote }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           ports:
             - containerPort: {{ .Values.jira.ports.jiraport }}
               name: jiraport
-            - containerPort: {{ .Values.jira.ports.jiraclusterport }}
+            - containerPort: {{ .Values.cluster.clusterPort }}
               name: jiraclusterport
-            - containerPort: {{ .Values.jira.ports.remote-object }}
+            - containerPort: {{ .Values.cluster.ehcachePort }}
               name: remote-object
           env:
             - name: JIRA_NODE_ID
@@ -46,12 +48,12 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.volumes.sharedHome.volumeClaimName }}
   volumeClaimTemplates:
-  - metadata:
-      name: home
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: {{ .Values.volumes.home.storageClassName | quote }}
-      {{- with .Values.volumes.localHome.resources }}
-      resources:
-      {{- toYaml . | nindent 10 }}
-      {{- end }}
+    - metadata:
+        name: home
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.volumes.home.storageClassName | quote }}
+        {{- with .Values.volumes.home.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
